@@ -1,5 +1,5 @@
 /*
- * jQuery Pines Notify (pnotify) Plugin 1.2.0
+ * jQuery Pines Notify (pnotify) Plugin 1.2.2
  *
  * http://pinesframework.org/pnotify/
  * Copyright (c) 2009-2012 Hunter Perrin
@@ -170,7 +170,7 @@
 					}
 					if (opts.nonblock) {
 						// If it's non-blocking, animate to the other opacity.
-						pnotify.animate({"opacity": opts.nonblock_opacity}, "fast");
+						pnotify.stop().animate({"opacity": opts.nonblock_opacity}, "fast");
 					}
 					// Stop the close timer.
 					if (opts.hide && opts.mouse_reset) pnotify.pnotify_cancel_remove();
@@ -184,7 +184,7 @@
 					pnotify.css("cursor", "auto");
 					// Animate back to the normal opacity.
 					if (opts.nonblock && animating != "out")
-						pnotify.animate({"opacity": opts.opacity}, "fast");
+						pnotify.stop().animate({"opacity": opts.opacity}, "fast");
 					// Start the close timer.
 					if (opts.hide && opts.mouse_reset) pnotify.pnotify_queue_remove();
 					// Hide the buttons.
@@ -244,7 +244,7 @@
 				pnotify.container.addClass("ui-pnotify-shadow");
 
 			// The current version of Pines Notify.
-			pnotify.pnotify_version = "1.2.0";
+			pnotify.pnotify_version = "1.2.2";
 
 			// This function is for updating the notice.
 			pnotify.pnotify = function(options) {
@@ -439,8 +439,10 @@
 								animate.left = s.nextpos2+"px";
 								break;
 						}
-					} else
-						pnotify.css(csspos2, s.nextpos2+"px");
+					} else {
+						if(s.nextpos2)
+							pnotify.css(csspos2, s.nextpos2+"px");
+					}
 					// Keep track of the widest/tallest notice in the column/row, so we can push the next column/row.
 					switch (s.dir2) {
 						case "down":
@@ -477,7 +479,7 @@
 					}
 					// Run the animation.
 					if (animate.top || animate.bottom || animate.right || animate.left)
-						pnotify.animate(animate, {duration: 500, queue: false});
+						pnotify.animate(animate, {duration: this.opts.position_animate_speed, queue: false});
 					// Calculate the next dir1 position.
 					switch (s.dir1) {
 						case "down":
@@ -504,6 +506,14 @@
 
 			// Display the notice.
 			pnotify.pnotify_display = function() {
+                // Remove oldest notifications leaving only opts.maxonscreen on screen
+                notices_data = jwindow.data("pnotify");
+                if (notices_data && (notices_data.length > opts.maxonscreen)) {
+                    $.each(notices_data.slice(0, notices_data.length - opts.maxonscreen), function(){
+                        if (this.pnotify_remove)
+                            this.pnotify_remove();
+                        });
+                };
 				// If the notice is not in the DOM, append it.
 				if (!pnotify.parent().length)
 					pnotify.appendTo(body);
@@ -632,7 +642,7 @@
 					pnotify.closer.css("visibility", "hidden");
 				}
 			})
-			.append($("<span />", {"class": styles.closer}))
+			.append($("<span />", {"class": styles.closer, "title": opts.labels.close}))
 			.appendTo(pnotify.container);
 			if (!opts.closer || opts.nonblock)
 				pnotify.closer.css("display", "none");
@@ -653,7 +663,7 @@
 			.bind("pnotify_icon", function(){
 				$(this).children().removeClass(styles.pin_up+" "+styles.pin_down).addClass(opts.hide ? styles.pin_up : styles.pin_down);
 			})
-			.append($("<span />", {"class": styles.pin_up}))
+			.append($("<span />", {"class": styles.pin_up, "title": opts.labels.stick}))
 			.appendTo(pnotify.container);
 			if (!opts.sticker || opts.nonblock)
 				pnotify.sticker.css("display", "none");
@@ -729,10 +739,10 @@
 							history_menu.animate({top: "-"+history_handle_top+"px"}, {duration: 100, queue: false});
 						}
 					})
-					.append($("<div />", {"class": "ui-pnotify-history-header", "text": "Redisplay"}))
+					.append($("<div />", {"class": "ui-pnotify-history-header", "text": opts.labels.redisplay}))
 					.append($("<button />", {
 							"class": "ui-pnotify-history-all "+styles.hi_btn,
-							"text": "All",
+							"text": opts.labels.all,
 							"mouseenter": function(){
 								$(this).addClass(styles.hi_btnhov);
 							},
@@ -755,7 +765,7 @@
 					}))
 					.append($("<button />", {
 							"class": "ui-pnotify-history-last "+styles.hi_btn,
-							"text": "Last",
+							"text": opts.labels.last,
 							"mouseenter": function(){
 								$(this).addClass(styles.hi_btnhov);
 							},
@@ -806,7 +816,8 @@
 			opts.stack.animation = false;
 
 			// Display the notice.
-			pnotify.pnotify_display();
+			if (opts.auto_display)
+				pnotify.pnotify_display();
 
 			return pnotify;
 		}
@@ -850,7 +861,7 @@
 			this.fireEvent(e, event_object);
 		}
 	};
-
+        
 	$.pnotify.defaults = {
 		// The notice's title.
 		title: false,
@@ -872,6 +883,10 @@
 		nonblock_opacity: .2,
 		// Display a pull down menu to redisplay previous notices, and place the notice in the history.
 		history: true,
+        // Maximum number of notifications to have onscreen
+        maxonscreen: Infinity,
+		// Display the notice when it is created. Turn this off to add notifications to the history without displaying them.
+		auto_display: true,
 		// Width of the notice.
 		width: "300px",
 		// Minimum height of the notice. It will expand to fit content.
@@ -884,6 +899,8 @@
 		animation: "fade",
 		// Speed at which the notice animates in and out. "slow", "def" or "normal", "fast" or number of milliseconds.
 		animate_speed: "slow",
+		// Specify a specific duration of position animation
+		position_animate_speed: 500,
 		// Opacity of the notice.
 		opacity: 1,
 		// Display a drop shadow.
@@ -907,6 +924,14 @@
 		// Change new lines to br tags.
 		insert_brs: true,
 		// The stack on which the notices will be placed. Also controls the direction the notices stack.
-		stack: {"dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25}
+		stack: {"dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25},
+                //Lets you change the displayed text, facilitating the internationalization.
+                labels: {
+                    redisplay: "Redisplay", 
+                    all: "All", 
+                    last: "Last",
+                    close: "Close",
+                    stick: "Stick"
+                }
 	};
 })(jQuery);
