@@ -52,7 +52,7 @@
 				hi_btn: "btn",
 				hi_btnhov: "",
 				hi_hnd: "icon-chevron-down"
-			}
+			},
 			bootstrap3: {
                                 container: "alert",
                                 notice: "alert-info",
