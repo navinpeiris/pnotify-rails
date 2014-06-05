@@ -2,7 +2,7 @@
 
 Pines Notify is a JavaScript notification plugin, developed by Hunter Perrin as part of Pines. It is designed to provide an unparalleled level of flexibility, while still being very easy to implement and use.
 
-See the [Pines Notify home page](http://pinesframework.org/pnotify/) for more information and examples.
+See the [PNotify home page](http://sciactive.com/pnotify/) for more information and examples.
 
 ## Requirements
 
@@ -28,15 +28,17 @@ Require `pnotify` in your `app/assets/javascripts/application.js` file:
 
     //= require pnotify
 
+If you want to use only specific PNotify modules, you can include them without requiring all JS code:
+
+	//= require pnotify/pnotify.core
+	//= require pnotify/pnotify.buttons
+
 ## Using the default styles
 
 Add the following to your app/assets/stylesheets/application.css file:
 
-    *= require jquery.pnotify.default
+    *= require pnotify
 
-And if you require the default Pines icon styles, add the following as well:
-
-    *= require jquery.pnotify.default.icons
 
 ## Contributing
 
