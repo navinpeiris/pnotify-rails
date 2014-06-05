@@ -1,5 +1,5 @@
 module PNotify
   module Rails
-    VERSION = '1.2.2'
+    VERSION = '2.0.1'
   end
 end
