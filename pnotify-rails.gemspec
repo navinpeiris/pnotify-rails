@@ -11,6 +11,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Pines Notify for Rails 3.1 Asset Pipeline}
   gem.summary       = %q{Pines Notify is a JavaScript notification plugin developed by Hunter Perrin integrated for Rails 3.1 Asset Pipeline}
   gem.homepage      = 'https://github.com/navinpeiris/pnotify-rails'
+  gem.licenses      = ['MIT']
 
   gem.files         = Dir["{lib,vendor}/**/*"] + %w(README.md LICENSE.txt)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
