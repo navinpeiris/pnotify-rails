@@ -1,6 +1,9 @@
 /*
- *= require pnotify/pnotify.core
+ *= require pnotify/pnotify
+ *= require pnotify/pnotify.brighttheme
  *= require pnotify/pnotify.buttons
  *= require pnotify/pnotify.history
- *= require pnotify/pnotify.picon
+ *= require pnotify/pnotify.material
+ *= require pnotify/pnotify.mobile
+ *= require pnotify/pnotify.nonblock
  */
