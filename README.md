@@ -30,7 +30,7 @@ Require `pnotify` in your `app/assets/javascripts/application.js` file:
 
 If you want to use only specific PNotify modules, you can include them without requiring all JS code:
 
-	//= require pnotify/pnotify.core
+	//= require pnotify/pnotify
 	//= require pnotify/pnotify.buttons
 
 ## Using the default styles
